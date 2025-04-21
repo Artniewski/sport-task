@@ -27,9 +27,8 @@ class ScoreBoardTest {
         // Given
         ScoreBoard scoreBoard = new ScoreBoard();
         // When & Then
-        assertThrows(ScoreBoardException.class, () -> scoreBoard.startGame("", "Poland"));
-        assertThrows(ScoreBoardException.class, () -> scoreBoard.startGame(null, "Germany"));
-        assertThrows(ScoreBoardException.class, () -> scoreBoard.startGame("Spain", "Spain"));
-        assertThrows(ScoreBoardException.class, () -> scoreBoard.startGame("Spain     ", "Spain"));
+        assertThrows(IllegalArgumentException.class, () -> scoreBoard.startGame("", "Poland"));
+        assertThrows(IllegalArgumentException.class, () -> scoreBoard.startGame("Greece", "      "));
+        assertThrows(IllegalArgumentException.class, () -> scoreBoard.startGame(null, "Germany"));
     }
 }

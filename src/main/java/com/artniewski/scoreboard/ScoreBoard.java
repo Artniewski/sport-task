@@ -16,6 +16,7 @@ public class ScoreBoard {
     }
 
     public void finishGame(String homeTeamName, String awayTeamName) {
+        validateTeamNames(homeTeamName, awayTeamName);
         String matchId = composeMatchId(homeTeamName, awayTeamName);
         Match match = matches.remove(matchId);
         if (match == null) {

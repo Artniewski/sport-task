@@ -35,6 +35,10 @@ public class ScoreBoard {
 
     }
 
+    public void finishGame(String homeTeamName, String awayTeamName) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
     private static void validateTeamNames(String homeTeamName, String awayTeamName) {
         validateTeamName(homeTeamName);
         validateTeamName(awayTeamName);

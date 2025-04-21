@@ -50,4 +50,21 @@ class ScoreBoardTest {
         assertThrows(GameException.class, () -> scoreBoard.startGame("Spain", "France"));
         assertThrows(GameException.class, () -> scoreBoard.startGame("Germany", "Italy"));
     }
+
+    @Test
+    void shouldThrowExceptionWhenFinishingNonExistentGame() {
+        // Given
+        ScoreBoard scoreBoard = new ScoreBoard();
+        // When & Then
+        assertThrows(GameException.class, () -> scoreBoard.finishGame("Brazil", "Argentina"));
+    }
+
+    @Test
+    void shouldSuccessfullyFinishGame() {
+        // Given
+        ScoreBoard scoreBoard = new ScoreBoard();
+        scoreBoard.startGame("Brazil", "Argentina");
+        // When & Then
+        scoreBoard.finishGame("Brazil", "Argentina");
+    }
 }

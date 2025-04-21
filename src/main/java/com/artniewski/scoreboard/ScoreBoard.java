@@ -13,6 +13,15 @@ public class ScoreBoard {
         return saveMatch(homeTeamName, awayTeamName);
     }
 
+    public void finishGame(String homeTeamName, String awayTeamName) {
+        String matchId = composeMatchId(homeTeamName, awayTeamName);
+        Match match = matches.get(matchId);
+        if (match == null) {
+            throw new GameException("Game not found");
+        }
+        matches.remove(matchId);
+    }
+
     private Match saveMatch(String homeTeamName, String awayTeamName) {
         String matchId = composeMatchId(homeTeamName, awayTeamName);
         Match match = new Match(homeTeamName, awayTeamName);
@@ -33,10 +42,6 @@ public class ScoreBoard {
                     throw new GameException("One of the teams is already playing");
                 });
 
-    }
-
-    public void finishGame(String homeTeamName, String awayTeamName) {
-        throw new UnsupportedOperationException("Not implemented");
     }
 
     private static void validateTeamNames(String homeTeamName, String awayTeamName) {

@@ -3,6 +3,7 @@ package com.artniewski.scoreboard;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.artniewski.scoreboard.exception.GameException;
 import com.artniewski.scoreboard.exception.GameNotFoundException;
 
 public class ScoreBoard {

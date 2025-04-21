@@ -2,9 +2,12 @@ package com.artniewski.scoreboard;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -73,6 +76,40 @@ class ScoreBoardTest {
         scoreBoard.startGame("Brazil", "Argentina");
         // When & Then
         assertDoesNotThrow(() -> scoreBoard.finishGame("Brazil", "Argentina"));
+    }
+
+    @Test
+    void shouldReturnSummaryWithEmptyList() {
+        // Given
+        ScoreBoard scoreBoard = new ScoreBoard();
+        // When
+        List<Match> summary = scoreBoard.getSummary();
+        // Then
+        assertTrue(summary.isEmpty());
+    }
+
+    @Test
+    void shouldReturnSummaryWithStartedGame() {
+        // Given
+        ScoreBoard scoreBoard = new ScoreBoard();
+        Match match = scoreBoard.startGame("Brazil", "Argentina");
+        // When
+        List<Match> summary = scoreBoard.getSummary();
+        // Then
+        assertEquals(1, summary.size());
+        assertIterableEquals(List.of(match), summary);
+    }
+
+    @Test
+    void shouldReturnEmptySummaryAfterFinishingGame() {
+        // Given
+        ScoreBoard scoreBoard = new ScoreBoard();
+        scoreBoard.startGame("Brazil", "Argentina");
+        scoreBoard.finishGame("Brazil", "Argentina");
+        // When
+        List<Match> summary = scoreBoard.getSummary();
+        // Then
+        assertTrue(summary.isEmpty());
     }
 
     @ParameterizedTest

@@ -1,6 +1,7 @@
 package com.artniewski.scoreboard;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.artniewski.scoreboard.exception.GameException;
@@ -23,6 +24,10 @@ public class ScoreBoard {
         if (match == null) {
             throw new GameNotFoundException("Game not found");
         }
+    }
+
+    public List<Match> getSummary() {
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     private Match saveMatch(String homeTeamName, String awayTeamName) {

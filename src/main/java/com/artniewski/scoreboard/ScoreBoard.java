@@ -27,7 +27,9 @@ public class ScoreBoard {
     }
 
     public List<Match> getSummary() {
-        throw new UnsupportedOperationException("Not implemented");
+        return matches.values()
+                .stream()
+                .toList();
     }
 
     private Match saveMatch(String homeTeamName, String awayTeamName) {

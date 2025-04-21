@@ -112,6 +112,26 @@ class ScoreBoardTest {
         assertTrue(summary.isEmpty());
     }
 
+    @Test
+    void shouldThrowExceptionUpdatingScoreForNonExistentGame() {
+        // Given
+        ScoreBoard scoreBoard = new ScoreBoard();
+        // When & Then
+        assertThrows(GameNotFoundException.class, () -> scoreBoard.updateScore("Brazil", "Argentina", 2, 3));
+    }
+
+    @Test
+    void shouldUpdateGameScore() {
+        // Given
+        ScoreBoard scoreBoard = new ScoreBoard();
+        Match match = scoreBoard.startGame("Brazil", "Argentina");
+        // When
+        Match result = scoreBoard.updateScore("Brazil", "Argentina", 2, 3);
+        // Then
+        assertEquals(2, result.getHomeScore());
+        assertEquals(3, result.getAwayScore());
+    }
+
     @ParameterizedTest
     @MethodSource("invalidTeamNames")
     void shouldThrowExceptionForInvalidTeamNameOnFinish(String homeTeamName, String awayTeamName) {

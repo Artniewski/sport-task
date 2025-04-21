@@ -17,6 +17,10 @@ public class ScoreBoard {
         return saveMatch(homeTeamName, awayTeamName);
     }
 
+    public Match updateScore(String homeTeamName, String awayTeamName, int homeTeamScore, int awayTeamScore) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
     public void finishGame(String homeTeamName, String awayTeamName) {
         validateTeamNames(homeTeamName, awayTeamName);
         String matchId = composeMatchId(homeTeamName, awayTeamName);

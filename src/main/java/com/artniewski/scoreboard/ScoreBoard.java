@@ -18,7 +18,13 @@ public class ScoreBoard {
     }
 
     public Match updateScore(String homeTeamName, String awayTeamName, int homeTeamScore, int awayTeamScore) {
-        throw new UnsupportedOperationException("Not implemented");
+        String matchId = composeMatchId(homeTeamName, awayTeamName);
+        Match match = matches.get(matchId);
+        if (match == null) {
+            throw new GameNotFoundException("Game not found");
+        }
+        match.updateScore(homeTeamScore, awayTeamScore);
+        return match;
     }
 
     public void finishGame(String homeTeamName, String awayTeamName) {

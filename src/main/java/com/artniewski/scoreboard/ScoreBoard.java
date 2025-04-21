@@ -10,13 +10,13 @@ public class ScoreBoard {
     private static void validateTeamNames(String homeTeamName, String awayTeamName) {
         validate(homeTeamName);
         validate(awayTeamName);
-        if (homeTeamName.trim().equalsIgnoreCase(awayTeamName.trim())) {
+        if (homeTeamName.equalsIgnoreCase(awayTeamName)) {
             throw new GameException("Home and away teams cannot be the same");
         }
     }
 
     private static void validate(String homeTeamName) {
-        if (homeTeamName == null || homeTeamName.trim().isEmpty()) {
+        if (homeTeamName == null || homeTeamName.isEmpty()) {
             throw new IllegalArgumentException("Team name cannot be null or empty");
         }
     }

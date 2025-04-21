@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
+import com.artniewski.scoreboard.exception.GameNotFoundException;
+
 class ScoreBoardTest {
 
     @Test
@@ -56,7 +58,7 @@ class ScoreBoardTest {
         // Given
         ScoreBoard scoreBoard = new ScoreBoard();
         // When & Then
-        assertThrows(GameException.class, () -> scoreBoard.finishGame("Brazil", "Argentina"));
+        assertThrows(GameNotFoundException.class, () -> scoreBoard.finishGame("Brazil", "Argentina"));
     }
 
     @Test

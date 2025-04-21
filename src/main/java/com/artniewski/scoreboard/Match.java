@@ -28,4 +28,8 @@ public class Match {
     public String getAwayTeam() {
         return awayTeam;
     }
+
+    boolean isInGame(String teamName) {
+        return homeTeam.equalsIgnoreCase(teamName) || awayTeam.equalsIgnoreCase(teamName);
+    }
 }

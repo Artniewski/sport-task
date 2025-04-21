@@ -38,4 +38,14 @@ class ScoreBoardTest {
         // When & Then
         assertThrows(GameException.class, () -> scoreBoard.startGame("Brazil", "Brazil"));
     }
+
+    @Test
+    void shouldThrowExceptionIfAnyTeamAlreadyInGame() {
+        // Given
+        ScoreBoard scoreBoard = new ScoreBoard();
+        scoreBoard.startGame("Spain", "Italy");
+        // When & Then
+        assertThrows(GameException.class, () -> scoreBoard.startGame("Spain", "France"));
+        assertThrows(GameException.class, () -> scoreBoard.startGame("Germany", "Italy"));
+    }
 }

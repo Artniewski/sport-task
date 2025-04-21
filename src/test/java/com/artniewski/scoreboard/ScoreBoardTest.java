@@ -4,7 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import com.artniewski.scoreboard.exception.GameNotFoundException;
 
@@ -24,15 +29,13 @@ class ScoreBoardTest {
         assertEquals(0, match.getAwayScore());
     }
 
-    @Test
-    void shouldThrowExceptionForInvalidTeamName() {
+    @ParameterizedTest
+    @MethodSource("invalidTeamNames")
+    void shouldThrowExceptionForInvalidTeamNameOnStart(String homeTeamName, String awayTeamName) {
         // Given
         ScoreBoard scoreBoard = new ScoreBoard();
         // When & Then
-        assertThrows(IllegalArgumentException.class, () -> scoreBoard.startGame("", "Poland"));
-        assertThrows(IllegalArgumentException.class, () -> scoreBoard.startGame(null, "Germany"));
-        assertThrows(IllegalArgumentException.class, () -> scoreBoard.startGame("Germany", null));
-        assertThrows(IllegalArgumentException.class, () -> scoreBoard.startGame("Germany", ""));
+        assertThrows(IllegalArgumentException.class, () -> scoreBoard.startGame(homeTeamName, awayTeamName));
     }
 
     @Test
@@ -68,5 +71,23 @@ class ScoreBoardTest {
         scoreBoard.startGame("Brazil", "Argentina");
         // When & Then
         scoreBoard.finishGame("Brazil", "Argentina");
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidTeamNames")
+    void shouldThrowExceptionForInvalidTeamNameOnFinish(String homeTeamName, String awayTeamName) {
+        // Given
+        ScoreBoard scoreBoard = new ScoreBoard();
+        // When & Then
+        assertThrows(IllegalArgumentException.class, () -> scoreBoard.finishGame(homeTeamName, awayTeamName));
+    }
+
+    private static Stream<Arguments> invalidTeamNames() {
+        return Stream.of(
+                Arguments.of("", "Argentina"),
+                Arguments.of(null, "Argentina"),
+                Arguments.of("Brazil", ""),
+                Arguments.of("Brazil", null)
+        );
     }
 }

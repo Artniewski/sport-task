@@ -2,6 +2,7 @@ package com.artniewski.scoreboard;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -19,5 +20,16 @@ class ScoreBoardTest {
         assertEquals(0, match.getHomeScore());
         assertEquals("Canada", match.getAwayTeam());
         assertEquals(0, match.getAwayScore());
+    }
+
+    @Test
+    void shouldThrowExceptionForInvalidTeamName() {
+        // Given
+        ScoreBoard scoreBoard = new ScoreBoard();
+        // When & Then
+        assertThrows(ScoreBoardException.class, () -> scoreBoard.startGame("", "Poland"));
+        assertThrows(ScoreBoardException.class, () -> scoreBoard.startGame(null, "Germany"));
+        assertThrows(ScoreBoardException.class, () -> scoreBoard.startGame("Spain", "Spain"));
+        assertThrows(ScoreBoardException.class, () -> scoreBoard.startGame("Spain     ", "Spain"));
     }
 }

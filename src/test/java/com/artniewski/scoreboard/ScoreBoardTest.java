@@ -31,4 +31,13 @@ class ScoreBoardTest {
         assertThrows(IllegalArgumentException.class, () -> scoreBoard.startGame("Greece", "      "));
         assertThrows(IllegalArgumentException.class, () -> scoreBoard.startGame(null, "Germany"));
     }
+
+    @Test
+    void shouldThrowGameExceptionForSameTeamNames() {
+        // Given
+        ScoreBoard scoreBoard = new ScoreBoard();
+        // When & Then
+        assertThrows(GameException.class, () -> scoreBoard.startGame("Brazil", "Brazil"));
+        assertThrows(GameException.class, () -> scoreBoard.startGame("Argentina", "   Argentina   "));
+    }
 }

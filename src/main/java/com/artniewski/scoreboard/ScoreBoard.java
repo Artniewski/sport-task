@@ -66,7 +66,7 @@ public class ScoreBoard {
                 .stream()
                 .filter(m -> m.involves(homeTeamName) || m.involves(awayTeamName))
                 .findFirst()
-                .ifPresent(_ -> {
+                .ifPresent(__ -> {
                     throw new GameException("One of the teams is already playing");
                 });
 

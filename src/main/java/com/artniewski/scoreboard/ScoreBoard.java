@@ -19,6 +19,7 @@ public class ScoreBoard {
     }
 
     public Match updateScore(String homeTeamName, String awayTeamName, int homeTeamScore, int awayTeamScore) {
+        validateTeamNames(homeTeamName, awayTeamName);
         String matchId = composeMatchId(homeTeamName, awayTeamName);
         return Optional.ofNullable(matches.get(matchId))
                 .map(match -> match.updateScore(homeTeamScore, awayTeamScore))

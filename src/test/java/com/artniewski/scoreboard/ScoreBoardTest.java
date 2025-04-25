@@ -171,9 +171,6 @@ class ScoreBoardTest {
 
     private static Stream<Arguments> invalidGameScores() {
         return Stream.of(
-                Arguments.of(null, 0),
-                Arguments.of(2, null),
-                Arguments.of(null, null),
                 Arguments.of(-3, 0),
                 Arguments.of(0, -10),
                 Arguments.of(-1, -1)

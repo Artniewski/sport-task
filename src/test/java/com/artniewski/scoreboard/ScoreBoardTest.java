@@ -10,6 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -20,144 +22,149 @@ import com.artniewski.scoreboard.exception.GameNotFoundException;
 
 class ScoreBoardTest {
 
-    @Test
-    void shouldStartGameWithInitialScore() {
-        // Given
-        ScoreBoard scoreBoard = new ScoreBoard();
-        // When
-        Match match = scoreBoard.startGame("Mexico", "Canada");
-        // Then
-        assertNotNull(match);
-        assertEquals("Mexico", match.getHomeTeam());
-        assertEquals(0, match.getHomeScore());
-        assertEquals("Canada", match.getAwayTeam());
-        assertEquals(0, match.getAwayScore());
+    ScoreBoard scoreBoard;
+
+    @BeforeEach
+    void setUp() {
+        scoreBoard = new ScoreBoard();
     }
 
-    @ParameterizedTest
-    @MethodSource("invalidTeamNames")
-    void shouldThrowExceptionForInvalidTeamNameOnStart(String homeTeamName, String awayTeamName) {
-        // Given
-        ScoreBoard scoreBoard = new ScoreBoard();
-        // When & Then
-        assertThrows(IllegalArgumentException.class, () -> scoreBoard.startGame(homeTeamName, awayTeamName));
+    @Nested
+    class StartGameTests {
+        @Test
+        void shouldStartGameWithInitialScore() {
+            // When
+            Match match = scoreBoard.startGame("Mexico", "Canada");
+            // Then
+            assertNotNull(match);
+            assertEquals("Mexico", match.getHomeTeam());
+            assertEquals(0, match.getHomeScore());
+            assertEquals("Canada", match.getAwayTeam());
+            assertEquals(0, match.getAwayScore());
+        }
+
+        @ParameterizedTest
+        @MethodSource("com.artniewski.scoreboard.ScoreBoardTest#invalidTeamNames")
+        void shouldThrowExceptionForInvalidTeamNameOnStart(String homeTeamName, String awayTeamName) {
+            // When & Then
+            assertThrows(IllegalArgumentException.class, () -> scoreBoard.startGame(homeTeamName, awayTeamName));
+        }
+
+        @Test
+        void shouldThrowGameExceptionForSameTeamNames() {
+            // When & Then
+            assertThrows(GameException.class, () -> scoreBoard.startGame("Brazil", "Brazil"));
+        }
+
+        @Test
+        void shouldThrowExceptionIfAnyTeamAlreadyInGame() {
+            // Given
+            scoreBoard.startGame("Spain", "Italy");
+            // When & Then
+            assertThrows(GameException.class, () -> scoreBoard.startGame("Spain", "France"));
+            assertThrows(GameException.class, () -> scoreBoard.startGame("Germany", "Italy"));
+        }
+
+        @Test
+        void shouldIncludeStartedGameInSummary() {
+            // Given
+            Match match = scoreBoard.startGame("Brazil", "Argentina");
+            // When
+            List<Match> summary = scoreBoard.getSummary();
+            // Then
+            assertEquals(1, summary.size());
+            assertIterableEquals(List.of(match), summary);
+        }
     }
 
-    @Test
-    void shouldThrowGameExceptionForSameTeamNames() {
-        // Given
-        ScoreBoard scoreBoard = new ScoreBoard();
-        // When & Then
-        assertThrows(GameException.class, () -> scoreBoard.startGame("Brazil", "Brazil"));
+    @Nested
+    class FinishGameTests {
+        @Test
+        void shouldThrowExceptionWhenFinishingNonExistentGame() {
+            // When & Then
+            assertThrows(GameNotFoundException.class, () -> scoreBoard.finishGame("Brazil", "Argentina"));
+        }
+
+        @Test
+        void shouldSuccessfullyFinishGame() {
+            // Given
+            scoreBoard.startGame("Brazil", "Argentina");
+            // When & Then
+            assertDoesNotThrow(() -> scoreBoard.finishGame("Brazil", "Argentina"));
+        }
+
+        @Test
+        void shouldRemoveGameFromSummaryAfterFinish() {
+            // Given
+            scoreBoard.startGame("Brazil", "Argentina");
+            scoreBoard.finishGame("Brazil", "Argentina");
+            // When
+            List<Match> summary = scoreBoard.getSummary();
+            // Then
+            assertTrue(summary.isEmpty());
+        }
+
+        @ParameterizedTest
+        @MethodSource("com.artniewski.scoreboard.ScoreBoardTest#invalidTeamNames")
+        void shouldThrowExceptionForInvalidTeamNameOnFinish(String homeTeamName, String awayTeamName) {
+            // When & Then
+            assertThrows(IllegalArgumentException.class, () -> scoreBoard.finishGame(homeTeamName, awayTeamName));
+        }
     }
 
-    @Test
-    void shouldThrowExceptionIfAnyTeamAlreadyInGame() {
-        // Given
-        ScoreBoard scoreBoard = new ScoreBoard();
-        scoreBoard.startGame("Spain", "Italy");
-        // When & Then
-        assertThrows(GameException.class, () -> scoreBoard.startGame("Spain", "France"));
-        assertThrows(GameException.class, () -> scoreBoard.startGame("Germany", "Italy"));
+    @Nested
+    class UpdateGameTests {
+        @Test
+        void shouldThrowExceptionUpdatingScoreForNonExistentGame() {
+            // When & Then
+            assertThrows(GameNotFoundException.class, () -> scoreBoard.updateScore("Brazil", "Argentina", 2, 3));
+        }
+
+        @ParameterizedTest
+        @MethodSource("com.artniewski.scoreboard.ScoreBoardTest#invalidTeamNames")
+        void shouldThrowExceptionForInvalidTeamNameOnUpdate(String homeTeamName, String awayTeamName) {
+            // When & Then
+            assertThrows(IllegalArgumentException.class, () -> scoreBoard.updateScore(homeTeamName, awayTeamName, 2, 3));
+        }
+
+        @ParameterizedTest
+        @MethodSource("invalidGameScores")
+        void shouldThrowExceptionUpdatingWithInvalidScore(Integer homeScore, Integer awayScore) {
+            scoreBoard.startGame("Brazil", "Argentina");
+            // When & Then
+            assertThrows(IllegalArgumentException.class, () -> scoreBoard.updateScore("Brazil", "Argentina", homeScore, awayScore));
+        }
+
+        @Test
+        void shouldUpdateGameScore() {
+            // Given
+            Match match = scoreBoard.startGame("Brazil", "Argentina");
+            // When
+            Match result = scoreBoard.updateScore("Brazil", "Argentina", 2, 3);
+            // Then
+            assertEquals(2, result.getHomeScore());
+            assertEquals(3, result.getAwayScore());
+        }
+
+        private static Stream<Arguments> invalidGameScores() {
+            return Stream.of(
+                    Arguments.of(-3, 0),
+                    Arguments.of(0, -10),
+                    Arguments.of(-1, -1)
+            );
+        }
     }
 
-    @Test
-    void shouldThrowExceptionWhenFinishingNonExistentGame() {
-        // Given
-        ScoreBoard scoreBoard = new ScoreBoard();
-        // When & Then
-        assertThrows(GameNotFoundException.class, () -> scoreBoard.finishGame("Brazil", "Argentina"));
-    }
+    @Nested
+    class SummaryTests {
 
-    @Test
-    void shouldSuccessfullyFinishGame() {
-        // Given
-        ScoreBoard scoreBoard = new ScoreBoard();
-        scoreBoard.startGame("Brazil", "Argentina");
-        // When & Then
-        assertDoesNotThrow(() -> scoreBoard.finishGame("Brazil", "Argentina"));
-    }
-
-    @Test
-    void shouldReturnSummaryWithEmptyList() {
-        // Given
-        ScoreBoard scoreBoard = new ScoreBoard();
-        // When
-        List<Match> summary = scoreBoard.getSummary();
-        // Then
-        assertTrue(summary.isEmpty());
-    }
-
-    @Test
-    void shouldReturnSummaryWithStartedGame() {
-        // Given
-        ScoreBoard scoreBoard = new ScoreBoard();
-        Match match = scoreBoard.startGame("Brazil", "Argentina");
-        // When
-        List<Match> summary = scoreBoard.getSummary();
-        // Then
-        assertEquals(1, summary.size());
-        assertIterableEquals(List.of(match), summary);
-    }
-
-    @Test
-    void shouldReturnEmptySummaryAfterFinishingGame() {
-        // Given
-        ScoreBoard scoreBoard = new ScoreBoard();
-        scoreBoard.startGame("Brazil", "Argentina");
-        scoreBoard.finishGame("Brazil", "Argentina");
-        // When
-        List<Match> summary = scoreBoard.getSummary();
-        // Then
-        assertTrue(summary.isEmpty());
-    }
-
-    @Test
-    void shouldThrowExceptionUpdatingScoreForNonExistentGame() {
-        // Given
-        ScoreBoard scoreBoard = new ScoreBoard();
-        // When & Then
-        assertThrows(GameNotFoundException.class, () -> scoreBoard.updateScore("Brazil", "Argentina", 2, 3));
-    }
-
-    @ParameterizedTest
-    @MethodSource("invalidTeamNames")
-    void shouldThrowExceptionForInvalidTeamNameOnUpdate(String homeTeamName, String awayTeamName) {
-        // Given
-        ScoreBoard scoreBoard = new ScoreBoard();
-        // When & Then
-        assertThrows(IllegalArgumentException.class, () -> scoreBoard.updateScore(homeTeamName, awayTeamName, 2, 3));
-    }
-
-    @ParameterizedTest
-    @MethodSource("invalidGameScores")
-    void shouldThrowExceptionForInvalidGameScores(Integer homeScore, Integer awayScore) {
-        // Given
-        ScoreBoard scoreBoard = new ScoreBoard();
-        scoreBoard.startGame("Brazil", "Argentina");
-        // When & Then
-        assertThrows(IllegalArgumentException.class, () -> scoreBoard.updateScore("Brazil", "Argentina", homeScore, awayScore));
-    }
-
-    @Test
-    void shouldUpdateGameScore() {
-        // Given
-        ScoreBoard scoreBoard = new ScoreBoard();
-        Match match = scoreBoard.startGame("Brazil", "Argentina");
-        // When
-        Match result = scoreBoard.updateScore("Brazil", "Argentina", 2, 3);
-        // Then
-        assertEquals(2, result.getHomeScore());
-        assertEquals(3, result.getAwayScore());
-    }
-
-    @ParameterizedTest
-    @MethodSource("invalidTeamNames")
-    void shouldThrowExceptionForInvalidTeamNameOnFinish(String homeTeamName, String awayTeamName) {
-        // Given
-        ScoreBoard scoreBoard = new ScoreBoard();
-        // When & Then
-        assertThrows(IllegalArgumentException.class, () -> scoreBoard.finishGame(homeTeamName, awayTeamName));
+        @Test
+        void shouldReturnSummaryWithEmptyList() {
+            // When
+            List<Match> summary = scoreBoard.getSummary();
+            // Then
+            assertTrue(summary.isEmpty());
+        }
     }
 
     private static Stream<Arguments> invalidTeamNames() {
@@ -169,11 +176,4 @@ class ScoreBoardTest {
         );
     }
 
-    private static Stream<Arguments> invalidGameScores() {
-        return Stream.of(
-                Arguments.of(-3, 0),
-                Arguments.of(0, -10),
-                Arguments.of(-1, -1)
-        );
-    }
 }

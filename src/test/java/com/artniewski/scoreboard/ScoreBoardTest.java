@@ -120,6 +120,25 @@ class ScoreBoardTest {
         assertThrows(GameNotFoundException.class, () -> scoreBoard.updateScore("Brazil", "Argentina", 2, 3));
     }
 
+    @ParameterizedTest
+    @MethodSource("invalidTeamNames")
+    void shouldThrowExceptionForInvalidTeamNameOnUpdate(String homeTeamName, String awayTeamName) {
+        // Given
+        ScoreBoard scoreBoard = new ScoreBoard();
+        // When & Then
+        assertThrows(IllegalArgumentException.class, () -> scoreBoard.updateScore(homeTeamName, awayTeamName, 2, 3));
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidGameScores")
+    void shouldThrowExceptionForInvalidGameScores(Integer homeScore, Integer awayScore) {
+        // Given
+        ScoreBoard scoreBoard = new ScoreBoard();
+        scoreBoard.startGame("Brazil", "Argentina");
+        // When & Then
+        assertThrows(IllegalArgumentException.class, () -> scoreBoard.updateScore("Brazil", "Argentina", homeScore, awayScore));
+    }
+
     @Test
     void shouldUpdateGameScore() {
         // Given
@@ -147,6 +166,17 @@ class ScoreBoardTest {
                 Arguments.of(null, "Argentina"),
                 Arguments.of("Brazil", ""),
                 Arguments.of("Brazil", null)
+        );
+    }
+
+    private static Stream<Arguments> invalidGameScores() {
+        return Stream.of(
+                Arguments.of(null, 0),
+                Arguments.of(2, null),
+                Arguments.of(null, null),
+                Arguments.of(-3, 0),
+                Arguments.of(0, -10),
+                Arguments.of(-1, -1)
         );
     }
 }

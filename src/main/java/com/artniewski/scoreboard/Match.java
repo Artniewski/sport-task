@@ -40,7 +40,7 @@ public class Match {
         return this;
     }
 
-    boolean isInGame(String teamName) {
+    boolean involves(String teamName) {
         return homeTeam.equalsIgnoreCase(teamName) || awayTeam.equalsIgnoreCase(teamName);
     }
 

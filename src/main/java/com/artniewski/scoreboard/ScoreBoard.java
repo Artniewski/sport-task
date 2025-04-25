@@ -64,7 +64,7 @@ public class ScoreBoard {
     private void validateTeamsNotAlreadyPlaying(String homeTeamName, String awayTeamName) {
         matches.values()
                 .stream()
-                .filter(m -> m.isInGame(homeTeamName) || m.isInGame(awayTeamName))
+                .filter(m -> m.involves(homeTeamName) || m.involves(awayTeamName))
                 .findFirst()
                 .ifPresent(_ -> {
                     throw new GameException("One of the teams is already playing");

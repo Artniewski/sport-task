@@ -73,16 +73,12 @@ public class ScoreBoard {
     }
 
     private static void validateTeamNames(String homeTeamName, String awayTeamName) {
-        validateTeamName(homeTeamName);
-        validateTeamName(awayTeamName);
+        if (homeTeamName == null || awayTeamName == null || homeTeamName.isEmpty() || awayTeamName.isEmpty()) {
+            throw new IllegalArgumentException("Team name cannot be null or empty");
+        }
         if (homeTeamName.equalsIgnoreCase(awayTeamName)) {
             throw new GameException("Home and away teams cannot be the same");
         }
     }
 
-    private static void validateTeamName(String homeTeamName) {
-        if (homeTeamName == null || homeTeamName.isEmpty()) {
-            throw new IllegalArgumentException("Team name cannot be null or empty");
-        }
-    }
 }

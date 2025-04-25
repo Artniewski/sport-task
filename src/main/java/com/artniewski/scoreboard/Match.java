@@ -5,8 +5,10 @@ public class Match {
     private final String awayTeam;
     private int homeScore;
     private int awayScore;
+    private final long creationIndex;
 
-    public Match(String homeTeam, String awayTeam) {
+    public Match(String homeTeam, String awayTeam, long creationIndex) {
+        this.creationIndex = creationIndex;
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
         this.homeScore = 0;
@@ -40,5 +42,19 @@ public class Match {
 
     boolean isInGame(String teamName) {
         return homeTeam.equalsIgnoreCase(teamName) || awayTeam.equalsIgnoreCase(teamName);
+    }
+
+    int getTotalScore() {
+        return homeScore + awayScore;
+    }
+
+    long getCreationIndex() {
+        return creationIndex;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s %d - %s %d",
+                homeTeam, homeScore, awayTeam, awayScore);
     }
 }

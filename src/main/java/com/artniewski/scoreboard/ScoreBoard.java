@@ -1,14 +1,20 @@
 package com.artniewski.scoreboard;
 
+import static java.util.Comparator.comparingInt;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import com.artniewski.scoreboard.exception.GameException;
 import com.artniewski.scoreboard.exception.GameNotFoundException;
 
 public class ScoreBoard {
+
+    private final AtomicLong creationCounter = new AtomicLong();
 
     private final Map<String, Match> matches = new HashMap<>();
 
@@ -36,14 +42,17 @@ public class ScoreBoard {
     }
 
     public List<Match> getSummary() {
-        return matches.values()
-                .stream()
-                .toList();
+        return matches.values().stream()
+                .sorted(comparingInt(Match::getTotalScore)
+                        .thenComparingLong(Match::getCreationIndex)
+                        .reversed())
+                .collect(Collectors.toList());
     }
 
     private Match saveMatch(String homeTeamName, String awayTeamName) {
         String matchId = composeMatchId(homeTeamName, awayTeamName);
-        Match match = new Match(homeTeamName, awayTeamName);
+        long creationIndex = creationCounter.incrementAndGet();
+        Match match = new Match(homeTeamName, awayTeamName, creationIndex);
         matches.put(matchId, match);
         return match;
     }

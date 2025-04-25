@@ -31,6 +31,8 @@ class ScoreBoardTest {
         public static final String FRANCE = "France";
         public static final String ITALY = "Italy";
         public static final String ARGENTINA = "Argentina";
+        public static final String URUGUAY = "Uruguay";
+        public static final String AUSTRALIA = "Australia";
     }
 
     ScoreBoard scoreBoard;
@@ -175,6 +177,34 @@ class ScoreBoardTest {
             List<Match> summary = scoreBoard.getSummary();
             // Then
             assertTrue(summary.isEmpty());
+        }
+
+        @Test
+        void shouldReturnSummaryInCorrectOrder() {
+            // Given
+            scoreBoard.startGame(Teams.MEXICO, Teams.CANADA);
+            scoreBoard.updateScore(Teams.MEXICO, Teams.CANADA, 0, 5);
+            scoreBoard.startGame(Teams.SPAIN, Teams.BRAZIL);
+            scoreBoard.updateScore(Teams.SPAIN, Teams.BRAZIL, 10, 2);
+            scoreBoard.startGame(Teams.GERMANY, Teams.FRANCE);
+            scoreBoard.updateScore(Teams.GERMANY, Teams.FRANCE, 2, 2);
+            scoreBoard.startGame(Teams.URUGUAY, Teams.ITALY);
+            scoreBoard.updateScore(Teams.URUGUAY, Teams.ITALY, 6, 6);
+            scoreBoard.startGame(Teams.ARGENTINA, Teams.AUSTRALIA);
+            scoreBoard.updateScore(Teams.ARGENTINA, Teams.AUSTRALIA, 3, 1);
+            List<String> expected = List.of(
+                    "Uruguay 6 - Italy 6",
+                    "Spain 10 - Brazil 2",
+                    "Mexico 0 - Canada 5",
+                    "Argentina 3 - Australia 1",
+                    "Germany 2 - France 2"
+            );
+            // When
+            List<String> actual = scoreBoard.getSummary().stream()
+                    .map(Match::toString)
+                    .toList();
+            // Then
+            assertEquals(expected, actual);
         }
     }
 

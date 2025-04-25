@@ -3,6 +3,7 @@ package com.artniewski.scoreboard;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.artniewski.scoreboard.exception.GameException;
 import com.artniewski.scoreboard.exception.GameNotFoundException;
@@ -19,12 +20,9 @@ public class ScoreBoard {
 
     public Match updateScore(String homeTeamName, String awayTeamName, int homeTeamScore, int awayTeamScore) {
         String matchId = composeMatchId(homeTeamName, awayTeamName);
-        Match match = matches.get(matchId);
-        if (match == null) {
-            throw new GameNotFoundException("Game not found");
-        }
-        match.updateScore(homeTeamScore, awayTeamScore);
-        return match;
+        return Optional.ofNullable(matches.get(matchId))
+                .map(match -> match.updateScore(homeTeamScore, awayTeamScore))
+                .orElseThrow(() -> new GameNotFoundException("Game not found"));
     }
 
     public void finishGame(String homeTeamName, String awayTeamName) {

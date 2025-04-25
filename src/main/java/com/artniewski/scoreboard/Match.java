@@ -29,9 +29,10 @@ public class Match {
         return awayTeam;
     }
 
-    void updateScore(int homeTeamScore, int awayTeamScore) {
+    Match updateScore(int homeTeamScore, int awayTeamScore) {
         this.homeScore = homeTeamScore;
         this.awayScore = awayTeamScore;
+        return this;
     }
 
     boolean isInGame(String teamName) {
